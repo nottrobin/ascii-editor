@@ -4,6 +4,8 @@ class AsciiEditor:
     imageRows = []
 
     def initializeImage(self, columns, rows):
+        self.imageRows = []
+
         columns = int(columns)
         rows = int(rows)
 
@@ -33,45 +35,22 @@ class AsciiEditor:
         column = int(column)
         row = int(row)
 
-        xStart = self.getRegionXStart(column, row)
-        xEnd = self.getRegionXEnd(column, row)
-        yStart = self.getRegionYStart(column, row)
-        yEnd = self.getRegionYEnd(column, row)
+        self.drawMatchingSiblings(column, row, self.getPixel(column, row), drawLetter)
 
-        for row in range(yStart, yEnd + 1):
-            self.drawHorizontalSegment(xStart, xEnd, row, drawLetter)
+    def drawMatchingSiblings(self, column, row, oldLetter, newLetter):
+        if (column < 1 or row < 1 or row > len(self.imageRows) or column > len(self.imageRows[row - 1]) or self.getPixel(column, row) != oldLetter):
+            return
 
-    def getRegionXStart(self, column, row):
-        letter = self.getPixel(column, row)
+        self.drawPixel(column, row, newLetter)
 
-        while (self.getPixel(column, row) == letter and column != 0):
-            column = column - 1
-
-        return column + 1
-
-    def getRegionYStart(self, column, row):
-        letter = self.getPixel(column, row)
-
-        while (self.getPixel(column, row) == letter and row != 0):
-            row = row - 1
-
-        return row + 1
-
-    def getRegionXEnd(self, column, row):
-        letter = self.getPixel(column, row)
-
-        while (self.getPixel(column, row) == letter and column != len(self.imageRows[row]) + 1):
-            column = column + 1
-
-        return column - 1
-
-    def getRegionYEnd(self, column, row):
-        letter = self.getPixel(column, row)
-
-        while (self.getPixel(column, row) == letter and row != len(self.imageRows) + 1):
-            row = row + 1
-
-        return row - 1
+        self.drawMatchingSiblings(column + 1, row, oldLetter, newLetter)
+        self.drawMatchingSiblings(column - 1, row, oldLetter, newLetter)
+        self.drawMatchingSiblings(column, row + 1, oldLetter, newLetter)
+        self.drawMatchingSiblings(column, row - 1, oldLetter, newLetter)
+        self.drawMatchingSiblings(column + 1, row + 1, oldLetter, newLetter)
+        self.drawMatchingSiblings(column + 1, row - 1, oldLetter, newLetter)
+        self.drawMatchingSiblings(column - 1, row + 1, oldLetter, newLetter)
+        self.drawMatchingSiblings(column - 1, row - 1, oldLetter, newLetter)
 
     def showImage(self):
         for row in self.imageRows:
